@@ -1,0 +1,17 @@
+{
+  "name": "tiller",
+  "version": "0.1.0",
+  "description": "CLI tool for converting input to .html",
+  "main": "/bin/index.js",
+  "bin": {
+    "tiller": "/bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian Buenconsejo",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "commander": "^11.0.0"
+  }
+}
