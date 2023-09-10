@@ -1,11 +1,13 @@
 const fs = require('fs');
 const readline = require('readline');
 
-const convertFile = async (filename, dir) => {
+const convertFile = async (fileName, dir) => {
     let paragraphs = [];
     let count = 0;
-
-    const filestream = fs.createReadStream(filename);
+    if (fileName.search(/\.txt$/) == -1) {
+        throw new Error("tiller only supports conversion of .txt files.");
+    }
+    const filestream = fs.createReadStream(fileName);
     const rline = readline.createInterface({
         input: filestream,
         crlfDelay: Infinity,
@@ -24,24 +26,26 @@ const convertFile = async (filename, dir) => {
     }
 
     console.log(`Write to: ${dir}`);
+
+    let parsedFileName = fileName.replace(/\.txt$/, '');
     
     if (fs.existsSync(`./${dir}`)) {
         fs.rmSync(`./${dir}`, {recursive: true, force: true});
     }
     fs.mkdirSync(`./${dir}`);
-    fs.writeFileSync(`./${dir}/${filename}.html`,
+    fs.writeFileSync(`./${dir}/${parsedFileName}.html`,
     `<!doctype html>
     <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>${filename}</title>
+        <title>${parsedFileName}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>`);
     for (const paragraph of paragraphs) {
-        fs.appendFileSync(`./${dir}/${filename}.html`, `\n\t\t<p>${paragraph}</p>`);
+        fs.appendFileSync(`./${dir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
     }
-    fs.appendFileSync(`./${dir}/${filename}.html`, `\n\t</body>\n</html>`);
+    fs.appendFileSync(`./${dir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
 }
 
 module.exports.convertFile = convertFile;
