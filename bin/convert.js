@@ -4,9 +4,6 @@ const readline = require('readline');
 const convertFile = async (path, dir) => {
     let paragraphs = [];
     let count = 0;
-    if (path.search(/\.txt$/) == -1) {
-        throw new Error("tiller only supports conversion of .txt files.");
-    }
     const filestream = fs.createReadStream(path);
     const rline = readline.createInterface({
         input: filestream,
@@ -25,17 +22,11 @@ const convertFile = async (path, dir) => {
         }
     }
 
-    console.log(`Write to: ${dir}`);
-
     let parsedFileName = (path.replace(/\.txt$/, ''));
     if (path.lastIndexOf('/') > -1) {
         parsedFileName = parsedFileName.slice(path.lastIndexOf('/'));
     }
 
-    if (fs.existsSync(`./${dir}`)) {
-        fs.rmSync(`./${dir}`, {recursive: true, force: true});
-    }
-    fs.mkdirSync(`./${dir}`);
     fs.writeFileSync(`./${dir}/${parsedFileName}.html`,
     `<!doctype html>
     <html lang="en">
@@ -51,4 +42,25 @@ const convertFile = async (path, dir) => {
     fs.appendFileSync(`./${dir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
 }
 
+const convertDir = (dirName, outputDir) => {
+    const files = fs.readdirSync(`./${dirName}`);
+    clearOutput(outputDir);
+    for (const file of files) {
+        if (file.search(/\.txt$/) > -1) {     
+            convertFile(`./${dirName}/${file}`, outputDir)
+            .then(() => console.log(`Successfully proccessed ${file}`))
+            .catch((err) => console.log(err.message));
+        }
+    }
+}
+
+const clearOutput = (dir) => {
+    if (fs.existsSync(`./${dir}`)) {
+        fs.rmSync(`./${dir}`, {recursive: true, force: true});
+    }
+    fs.mkdirSync(`./${dir}`);
+}
+
 module.exports.convertFile = convertFile;
+module.exports.convertDir = convertDir;
+module.exports.clearOutput = clearOutput;
