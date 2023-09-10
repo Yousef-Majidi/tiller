@@ -1,13 +1,13 @@
 const fs = require('fs');
 const readline = require('readline');
 
-const convertFile = async (fileName, dir) => {
+const convertFile = async (path, dir) => {
     let paragraphs = [];
     let count = 0;
-    if (fileName.search(/\.txt$/) == -1) {
+    if (path.search(/\.txt$/) == -1) {
         throw new Error("tiller only supports conversion of .txt files.");
     }
-    const filestream = fs.createReadStream(fileName);
+    const filestream = fs.createReadStream(path);
     const rline = readline.createInterface({
         input: filestream,
         crlfDelay: Infinity,
@@ -27,8 +27,11 @@ const convertFile = async (fileName, dir) => {
 
     console.log(`Write to: ${dir}`);
 
-    let parsedFileName = fileName.replace(/\.txt$/, '');
-    
+    let parsedFileName = (path.replace(/\.txt$/, ''));
+    if (path.lastIndexOf('/') > -1) {
+        parsedFileName = parsedFileName.slice(path.lastIndexOf('/'));
+    }
+
     if (fs.existsSync(`./${dir}`)) {
         fs.rmSync(`./${dir}`, {recursive: true, force: true});
     }
