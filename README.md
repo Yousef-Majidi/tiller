@@ -6,7 +6,7 @@ tiller is a CLI tool that is able to convert input files to .html files.
 2. From inside the local folder, run `npm install -g .`
 ## Usage
 ```
-tiller [option] <input>
+tiller [options] <input>
 ```
 | Argument  | Description  
 | --------  | ----------- 
@@ -14,6 +14,6 @@ tiller [option] <input>
 
 | Option        | Description                           |
 | ------        | -----------                           |
-| -V, --version | output the version number             |
+| -v, --version | output the version number             |
 | -h, --help    | display help/usage message for tiller |
 | -o, --output <dir\> | specify the directory to write output to (default: /til) |

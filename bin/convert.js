@@ -26,17 +26,22 @@ const convertFile = async (filename, dir) => {
     console.log(`Write to: ${dir}`);
     
     if (fs.existsSync(`./${dir}`)) {
-        fs.rmSync(`./${dir}`, {recursive: true}, );
+        fs.rmSync(`./${dir}`, {recursive: true, force: true});
     }
     fs.mkdirSync(`./${dir}`);
-
+    fs.writeFileSync(`./${dir}/${filename}.html`,
+    `<!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>${filename}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>`);
     for (const paragraph of paragraphs) {
-        fs.appendFileSync(`./${dir}/${filename}.html`, `<p>${paragraph}</p>`, err => {
-            if (err) {
-                throw new Error(err.message);
-            }
-        });
+        fs.appendFileSync(`./${dir}/${filename}.html`, `\n\t\t<p>${paragraph}</p>`);
     }
+    fs.appendFileSync(`./${dir}/${filename}.html`, `\n\t</body>\n</html>`);
 }
 
 module.exports.convertFile = convertFile;

@@ -8,7 +8,7 @@ program
   .name('tiller')
   .description('CLI tool for converting input files to .html')
   .option('-o, --output <dir>', 'specify the directory to write output to', '/til')
-  .version('0.1.0')
+  .version(`tiller 0.1.0`, '-v, --version')
   .argument('<input>', 'specify the file or directory to be converted')
   .action((input, options) => {
     convertFile(input, options.output)
