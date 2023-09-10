@@ -14,6 +14,8 @@ tiller [options] <input>
 
 | Option        | Description                           |
 | ------        | -----------                           |
+| -o, --output <dir\> | specify the directory to write output to (default: /til) |
+| -s, --stylesheet <css\> | specify a stylesheet to be used in the generated .html output |
 | -v, --version | output the version number             |
 | -h, --help    | display help/usage message for tiller |
-| -o, --output <dir\> | specify the directory to write output to (default: /til) |
+ 
