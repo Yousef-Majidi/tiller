@@ -1,10 +1,10 @@
 const fs = require('fs');
 const readline = require('readline');
 
-const convertFile = async (path, dir, css) => {
+const convertFile = async (input, outputDir, css, convertingDir = false) => {
     let paragraphs = [];
     let count = 0;
-    const filestream = fs.createReadStream(path);
+    const filestream = fs.createReadStream(input);
     const rline = readline.createInterface({
         input: filestream,
         crlfDelay: Infinity,
@@ -22,14 +22,21 @@ const convertFile = async (path, dir, css) => {
         }
     }
 
-    let parsedFileName = (path.replace(/\.txt$/, ''));
-    if (path.lastIndexOf('/') > -1) {
-        parsedFileName = parsedFileName.slice(path.lastIndexOf('/'));
+    let parsedFileName = (input.replace(/\.txt$/, ''));
+    if (input.lastIndexOf('/') > -1) {
+        parsedFileName = parsedFileName.slice(input.lastIndexOf('/')+1);
     }
     
-    const styleTag = css.search(/\.css$/) > -1 ? `<link rel='stylesheet' href=${css}>` : "";
+    let styleTag = "";
+    if (css && css.match(/\.css$/)) {
+        styleTag = `<link rel='stylesheet' href=${css}>`;
+    }
 
-    fs.writeFileSync(`./${dir}/${parsedFileName}.html`,
+    if (!convertingDir) {
+        clearOutput(outputDir);
+    }
+
+    fs.writeFileSync(`./${outputDir}/${parsedFileName}.html`,
     `<!doctype html>
     <html lang="en">
     <head>
@@ -39,18 +46,20 @@ const convertFile = async (path, dir, css) => {
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>`);
+    
     for (const paragraph of paragraphs) {
-        fs.appendFileSync(`./${dir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
+        fs.appendFileSync(`./${outputDir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
     }
-    fs.appendFileSync(`./${dir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
+
+    fs.appendFileSync(`./${outputDir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
 }
 
-const convertDir = (dirName, outputDir, css) => {
-    const files = fs.readdirSync(`./${dirName}`);
+const convertDir = (input, outputDir, css) => {
+    const files = fs.readdirSync(`./${input}`);
     clearOutput(outputDir);
     for (const file of files) {
-        if (file.search(/\.txt$/) > -1) {     
-            convertFile(`./${dirName}/${file}`, outputDir, css)
+        if (file.match(/\.txt$/)) {     
+            convertFile(`./${input}/${file}`, outputDir, css, true)
             .then(() => console.log(`Successfully proccessed ${file}`))
             .catch((err) => console.log(err.message));
         }
