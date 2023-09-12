@@ -2,8 +2,8 @@
 tiller is a CLI tool that is able to convert input files to .html files.
 
 ## Installation
-1. Clone the repository, which will create a `tiller` directory.
-2. Navigate into the `tiller` directory
+1. `git clone https://github.com/rook4715/tiller.git`
+2. `cd tiller`
 3. `npm install`
 4. `npm install -g .`
 
