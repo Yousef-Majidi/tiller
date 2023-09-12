@@ -56,13 +56,20 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
 
 const convertDir = (input, outputDir, css) => {
     const files = fs.readdirSync(`./${input}`);
-    clearOutput(outputDir);
+    let foundTxt = false;
     for (const file of files) {
-        if (file.match(/\.txt$/)) {     
+        if (file.match(/\.txt$/)) {
+            if (!foundTxt) {
+                clearOutput(outputDir);
+                foundTxt = true;
+            }
             convertFile(`./${input}/${file}`, outputDir, css, true)
             .then(() => console.log(`Successfully proccessed ${file}`))
             .catch((err) => console.log(err.message));
         }
+    }
+    if (!foundTxt) {
+        console.log(`${input} contains no .txt files`);
     }
 }
 
