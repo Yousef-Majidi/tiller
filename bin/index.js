@@ -2,7 +2,7 @@
 const { Command } = require('commander');
 const program = new Command();
 
-const { convertFile, convertDir} = require("./convert");
+const { processFile } = require("./convert");
 
 program
   .name('tiller')
@@ -12,23 +12,10 @@ program
   .version(`tiller 0.1.0`, '-v, --version')
   .argument('<input>', 'specify the file or directory to be converted')
   .action((input, options) => {
-    if (!options.stylesheet) {
-      options.stylesheet = "";
-    }
-    if (input.match(/\.([0-9a-z]+)(?:[?#]|$)/)) {
-      if (!input.match(/\.txt$/)) {
-        console.log("tiller only supports conversion of .txt files");
-      } else {
-        convertFile(input, options.output, options.stylesheet)
-        .then(() => console.log(`Successfully proccessed ${input}`))
-        .catch((err) => console.log(err.message));
-      }
-    } else {
-      try {
-        convertDir(input, options.output, options.stylesheet);
-      } catch (err) {
-        console.log(err.message);
-      }
+    try {
+      processFile(input, options);
+    } catch (err) {
+      console.log(err.message);
     }
   });
 

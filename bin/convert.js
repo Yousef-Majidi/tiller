@@ -73,6 +73,19 @@ const clearOutput = (dir) => {
     fs.mkdirSync(`./${dir}`);
 }
 
-module.exports.convertFile = convertFile;
-module.exports.convertDir = convertDir;
-module.exports.clearOutput = clearOutput;
+const processFile = (input, options) => {
+    if (fs.statSync(`./${input}`).isFile()) {
+        if (!input.match(/\.txt$/)) {
+            throw new Error("tiller only supports conversion of .txt files");
+        } else {
+            convertFile(input, options.output, options.stylesheet)
+            .then(() => console.log(`Successfully proccessed ${input}`))
+            .catch((err) => console.log(err.message));
+        }
+    } else {
+        convertDir(input, options.output, options.stylesheet);
+    }
+}
+
+
+module.exports.processFile = processFile;
