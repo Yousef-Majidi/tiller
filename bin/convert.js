@@ -36,7 +36,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         clearOutput(outputDir);
     }
 
-    fs.writeFileSync(`./${outputDir}/${parsedFileName}.html`,
+    fs.writeFileSync(`${outputDir}/${parsedFileName}.html`,
     `<!doctype html>
     <html lang="en">
     <head>
@@ -48,14 +48,14 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     <body>`);
     
     for (const paragraph of paragraphs) {
-        fs.appendFileSync(`./${outputDir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
+        fs.appendFileSync(`${outputDir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
     }
 
-    fs.appendFileSync(`./${outputDir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
+    fs.appendFileSync(`${outputDir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
 }
 
 const convertDir = (input, outputDir, css) => {
-    const files = fs.readdirSync(`./${input}`);
+    const files = fs.readdirSync(input);
     let foundTxt = false;
     for (const file of files) {
         if (file.match(/\.txt$/)) {
@@ -63,7 +63,7 @@ const convertDir = (input, outputDir, css) => {
                 clearOutput(outputDir);
                 foundTxt = true;
             }
-            convertFile(`./${input}/${file}`, outputDir, css, true)
+            convertFile(`${input}/${file}`, outputDir, css, true)
             .then(() => console.log(`Successfully proccessed ${file}`))
             .catch((err) => console.log(err.message));
         }
@@ -74,14 +74,14 @@ const convertDir = (input, outputDir, css) => {
 }
 
 const clearOutput = (dir) => {
-    if (fs.existsSync(`./${dir}`)) {
-        fs.rmSync(`./${dir}`, {recursive: true, force: true});
+    if (fs.existsSync(`${dir}`)) {
+        fs.rmSync(`${dir}`, {recursive: true, force: true});
     }
-    fs.mkdirSync(`./${dir}`);
+    fs.mkdirSync(`${dir}`);
 }
 
 const processFile = (input, options) => {
-    if (fs.statSync(`./${input}`).isFile()) {
+    if (fs.statSync(`${input}`).isFile()) {
         if (!input.match(/\.txt$/)) {
             throw new Error("tiller only supports conversion of .txt files");
         } else {
