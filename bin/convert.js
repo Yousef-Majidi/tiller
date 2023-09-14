@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const path = require('path');
 
 const convertFile = async (input, outputDir, css, convertingDir = false) => {
     let paragraphs = [];
@@ -22,21 +23,20 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         }
     }
 
-    let parsedFileName = (input.replace(/\.txt$/, ''));
-    if (input.lastIndexOf('/') > -1) {
-        parsedFileName = parsedFileName.slice(input.lastIndexOf('/')+1);
-    }
+    let parsedFileName = path.basename(input, '.txt');
     
     let styleTag = "";
     if (css && css.match(/\.css$/)) {
         styleTag = `<link rel='stylesheet' href=${css}>`;
     }
 
+    const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
+
     if (!convertingDir) {
         clearOutput(outputDir);
     }
 
-    fs.writeFileSync(`${outputDir}/${parsedFileName}.html`,
+    fs.writeFileSync(fullPath,
     `<!doctype html>
     <html lang="en">
     <head>
@@ -48,10 +48,10 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     <body>`);
     
     for (const paragraph of paragraphs) {
-        fs.appendFileSync(`${outputDir}/${parsedFileName}.html`, `\n\t\t<p>${paragraph}</p>`);
+        fs.appendFileSync(fullPath, `\n\t\t<p>${paragraph}</p>`);
     }
 
-    fs.appendFileSync(`${outputDir}/${parsedFileName}.html`, `\n\t</body>\n</html>`);
+    fs.appendFileSync(fullPath, `\n\t</body>\n</html>`);
 }
 
 const convertDir = (input, outputDir, css) => {
@@ -64,7 +64,7 @@ const convertDir = (input, outputDir, css) => {
                 foundTxt = true;
             }
             convertFile(`${input}/${file}`, outputDir, css, true)
-            .then(() => console.log(`Successfully proccessed ${file}`))
+            .then(() => console.log(`Successfully proccessed ${path.resolve(file)}`))
             .catch((err) => console.log(err.message));
         }
     }
@@ -86,7 +86,7 @@ const processFile = (input, options) => {
             throw new Error("tiller only supports conversion of .txt files");
         } else {
             convertFile(input, options.output, options.stylesheet)
-            .then(() => console.log(`Successfully proccessed ${input}`))
+            .then(() => console.log(`Successfully proccessed ${path.resolve(input)}`))
             .catch((err) => console.log(err.message));
         }
     } else {
