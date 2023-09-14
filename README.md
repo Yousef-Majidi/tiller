@@ -10,6 +10,7 @@ If a directory is used as input, tiller will find and convert all the .txt files
 4. `npm install -g .`
 
 ## Usage
+**tiller will delete and recreate the output folder on each run to ensure that the output is always up to date. Move or back up any files you wish to keep between uses.**
 ```
 tiller [options] <input>
 ```
