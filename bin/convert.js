@@ -2,6 +2,13 @@ const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
 
+/*
+    converts a file to .html
+        input - the path of the file to convert
+        outputDir - the directory to save the .html in
+        css - the url of the css spreadsheet to use
+        convertingDir - was convertFile called from convertDir?
+*/
 const convertFile = async (input, outputDir, css, convertingDir = false) => {
     let paragraphs = [];
     let count = 0;
@@ -30,11 +37,12 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         styleTag = `<link rel='stylesheet' href=${css}>`;
     }
 
-    const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
-
+    //if convertFile was called from convertDir, the output folder is cleared in convertDir instead of here
     if (!convertingDir) {
         clearOutput(outputDir);
     }
+
+    const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
 
     fs.writeFileSync(fullPath,
     `<!doctype html>
@@ -54,6 +62,12 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     fs.appendFileSync(fullPath, `\n\t</body>\n</html>`);
 }
 
+/*
+    converts all supported files in a directory to .html
+        input - the directory whose contents to convert
+        outputDir - the directory to save the .html in
+        css - the url of the css spreadsheet to use
+*/
 const convertDir = (input, outputDir, css) => {
     const files = fs.readdirSync(input);
     let foundTxt = false;
@@ -73,6 +87,10 @@ const convertDir = (input, outputDir, css) => {
     }
 }
 
+/*
+    deletes & recreates a folder
+        dir - the folder to recreate
+*/
 const clearOutput = (dir) => {
     if (fs.existsSync(`${dir}`)) {
         fs.rmSync(`${dir}`, {recursive: true, force: true});
@@ -80,6 +98,12 @@ const clearOutput = (dir) => {
     fs.mkdirSync(`${dir}`);
 }
 
+/*
+    given a path, convert the file or directory to .html
+        input - the path specified by the user
+        options - arguments passed with options (e.g. -o <dir>, -s <url>)
+            (see: https://www.npmjs.com/package/commander#options)
+*/
 const processFile = (input, options) => {
     if (fs.statSync(`${input}`).isFile()) {
         if (!input.match(/\.txt$/)) {
@@ -93,6 +117,5 @@ const processFile = (input, options) => {
         convertDir(input, options.output, options.stylesheet);
     }
 }
-
 
 module.exports.processFile = processFile;

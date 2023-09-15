@@ -4,6 +4,7 @@ const program = new Command();
 
 const { processFile } = require("./convert");
 
+//see: https://www.npmjs.com/package/commander#quick-start
 program
   .name('tiller')
   .description('CLI tool for converting input files to .html')
