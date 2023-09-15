@@ -1,7 +1,7 @@
 {
   "name": "tiller",
   "version": "0.1.0",
-  "description": "CLI tool for converting input to .html",
+  "description": "CLI tool for converting input files to .html",
   "main": "/bin/index.js",
   "bin": {
     "tiller": "/bin/index.js"
