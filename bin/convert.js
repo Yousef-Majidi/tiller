@@ -69,20 +69,15 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         css - the url of the css spreadsheet to use
 */
 const convertDir = (input, outputDir, css) => {
-    const files = fs.readdirSync(input);
-    let foundTxt = false;
-    for (const file of files) {
-        if (file.match(/\.txt$/)) {
-            if (!foundTxt) {
-                clearOutput(outputDir);
-                foundTxt = true;
-            }
+    const files = fs.readdirSync(input).filter((file) => path.extname(file) == '.txt');
+    if (files.length > 0) {
+        clearOutput(outputDir);
+        for (const file of files) {
             convertFile(`${input}/${file}`, outputDir, css, true)
             .then(() => console.log(`Successfully proccessed ${path.resolve(file)}`))
             .catch((err) => console.log(err.message));
         }
-    }
-    if (!foundTxt) {
+    } else {
         console.log(`${input} contains no .txt files`);
     }
 }
@@ -106,7 +101,7 @@ const clearOutput = (dir) => {
 */
 const processFile = (input, options) => {
     if (fs.statSync(`${input}`).isFile()) {
-        if (!input.match(/\.txt$/)) {
+        if (path.extname(input) != '.txt') {
             throw new Error("tiller only supports conversion of .txt files");
         } else {
             convertFile(input, options.output, options.stylesheet)
