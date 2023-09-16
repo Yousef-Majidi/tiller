@@ -4,6 +4,8 @@ At the moment, only .txt files are supported.
 If a directory is used as input, tiller will find and convert all the .txt files in that directory.
 
 ## Installation
+node and npm must be installed.
+
 1. `git clone https://github.com/rook4715/tiller.git`
 2. `cd tiller`
 3. `npm install`
@@ -31,4 +33,7 @@ tiller [options] <input>
 `tiller -o til2 file.txt`
 
 `tiller -s https://cdn.jsdelivr.net/npm/water.css@2/out/water.css file.txt`
- 
+
+## License
+
+[GPL 3.0](https://github.com/rook4715/tiller/blob/main/LICENSE)
