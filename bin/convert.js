@@ -69,7 +69,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         css - the url of the css spreadsheet to use
 */
 const convertDir = (input, outputDir, css) => {
-    const files = fs.readdirSync(input).filter((file) => path.extname(file) == '.txt');
+    const files = fs.readdirSync(input).filter((file) => path.extname(file) == '.txt' || path.extname(file) == '.md');
     if (files.length > 0) {
         clearOutput(outputDir);
         for (const file of files) {
@@ -101,8 +101,8 @@ const clearOutput = (dir) => {
 */
 const processFile = (input, options) => {
     if (fs.statSync(`${input}`).isFile()) {
-        if (path.extname(input) != '.txt') {
-            throw new Error("tiller only supports conversion of .txt files");
+        if (path.extname(input) != '.txt' && path.extname(input) != '.md') {
+            throw new Error("tiller only supports conversion of .txt and .md files");
         } else {
             convertFile(input, options.output, options.stylesheet)
                 .then(() => console.log(`Successfully processed ${path.resolve(input)}`))
