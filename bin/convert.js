@@ -20,9 +20,9 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
 
     for await (const line of rline) {
         if (line.length > 0) {
-            paragraphs[count] ? 
+            paragraphs[count] ?
                 paragraphs[count] += (' ' + line)
-                :  paragraphs[count] = line;
+                : paragraphs[count] = line;
         } else {
             if (paragraphs[count]) {
                 count++;
@@ -31,7 +31,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     }
 
     let parsedFileName = path.basename(input, '.txt');
-    
+
     let styleTag = "";
     if (css && css.match(/\.css$/)) {
         styleTag = `<link rel='stylesheet' href=${css}>`;
@@ -45,7 +45,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
 
     fs.writeFileSync(fullPath,
-    `<!doctype html>
+        `<!doctype html>
     <html lang="en">
     <head>
         ${styleTag}
@@ -54,7 +54,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>`);
-    
+
     for (const paragraph of paragraphs) {
         fs.appendFileSync(fullPath, `\n\t\t<p>${paragraph}</p>`);
     }
@@ -74,8 +74,8 @@ const convertDir = (input, outputDir, css) => {
         clearOutput(outputDir);
         for (const file of files) {
             convertFile(`${input}/${file}`, outputDir, css, true)
-            .then(() => console.log(`Successfully proccessed ${path.resolve(file)}`))
-            .catch((err) => console.log(err.message));
+                .then(() => console.log(`Successfully processed ${path.resolve(file)}`))
+                .catch((err) => console.log(err.message));
         }
     } else {
         console.log(`${input} contains no .txt files`);
@@ -88,7 +88,7 @@ const convertDir = (input, outputDir, css) => {
 */
 const clearOutput = (dir) => {
     if (fs.existsSync(`${dir}`)) {
-        fs.rmSync(`${dir}`, {recursive: true, force: true});
+        fs.rmSync(`${dir}`, { recursive: true, force: true });
     }
     fs.mkdirSync(`${dir}`);
 }
@@ -105,8 +105,8 @@ const processFile = (input, options) => {
             throw new Error("tiller only supports conversion of .txt files");
         } else {
             convertFile(input, options.output, options.stylesheet)
-            .then(() => console.log(`Successfully proccessed ${path.resolve(input)}`))
-            .catch((err) => console.log(err.message));
+                .then(() => console.log(`Successfully processed ${path.resolve(input)}`))
+                .catch((err) => console.log(err.message));
         }
     } else {
         convertDir(input, options.output, options.stylesheet);
