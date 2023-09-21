@@ -21,11 +21,13 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     const ext = path.extname(input);
     let parsedFileName;
 
-    if (ext == '.md') {
-        paragraphs = await convertMarkdownFile(input);
+    if (ext == '.md') { // Handle .md files as Markdown
+        paragraphs = await convertMarkdownFile(input)
+            .then((markdown) => markdown)
+            .catch((err) => console.log(err.message)); // TODO: Handle the error better
         parsedFileName = path.basename(input, '.md');
     }
-    else {
+    else { // Handle other file types as text
         for await (const line of rline) {
             if (line.length > 0) {
                 paragraphs[count] ?
@@ -76,9 +78,17 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         input - the path of the file to convert
 */
 const convertMarkdownFile = async (input) => {
-    const fileContents = fs.readFileSync(input, 'utf8');
-    const paragraphs = fileContents.split(/\n{2,}/).map(p => p.trim());
-    return paragraphs;
+    try {
+        const fileContents = fs.readFileSync(input, 'utf8');
+        const paragraphs = fileContents.split(/\r\n\r\n/).map(p => {
+            console.log(p);
+            const formattedParagraph = p.replace(/_(.*?)_/g, '<em>$1</em>');
+            return formattedParagraph;
+        });
+        return paragraphs;
+    } catch (err) {
+        throw err;
+    }
 }
 
 /*
