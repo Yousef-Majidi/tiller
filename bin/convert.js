@@ -18,19 +18,28 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         crlfDelay: Infinity,
     });
 
-    for await (const line of rline) {
-        if (line.length > 0) {
-            paragraphs[count] ?
-                paragraphs[count] += (' ' + line)
-                : paragraphs[count] = line;
-        } else {
-            if (paragraphs[count]) {
-                count++;
+    const ext = path.extname(input);
+    let parsedFileName;
+
+    if (ext == '.md') {
+        paragraphs = await convertMarkdownFile(input);
+        parsedFileName = path.basename(input, '.md');
+    }
+    else {
+        for await (const line of rline) {
+            if (line.length > 0) {
+                paragraphs[count] ?
+                    paragraphs[count] += (' ' + line)
+                    : paragraphs[count] = line;
+            } else {
+                if (paragraphs[count]) {
+                    count++;
+                }
             }
         }
+        parsedFileName = path.basename(input, '.txt');
     }
 
-    let parsedFileName = path.basename(input, '.txt');
 
     let styleTag = "";
     if (css && css.match(/\.css$/)) {
@@ -60,6 +69,16 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     }
 
     fs.appendFileSync(fullPath, `\n\t</body>\n</html>`);
+}
+
+/*
+    converts a markdown file to .html
+        input - the path of the file to convert
+*/
+const convertMarkdownFile = async (input) => {
+    const fileContents = fs.readFileSync(input, 'utf8');
+    const paragraphs = fileContents.split(/\n{2,}/).map(p => p.trim());
+    return paragraphs;
 }
 
 /*
