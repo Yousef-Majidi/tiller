@@ -35,9 +35,17 @@ tiller [options] <input>
 
 ### Example usage
 
-`tiller file.txt` or `tiller file.md`
+`tiller file.txt`
 
-`tiller -o til2 file.txt` or `tiller --output til file.md`
+or
+
+`tiller file.md`
+
+`tiller -o til2 file.txt`
+
+or
+
+`tiller --output til2 file.md`
 
 `tiller -s https://cdn.jsdelivr.net/npm/water.css@2/out/water.css file.txt`
 
