@@ -21,12 +21,14 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     const ext = path.extname(input);
     let parsedFileName;
 
-    for await (const line of rline) {
+    for await (let line of rline) {
         if (line.length > 0) {
-            var processedLine = line.replace(/_(.*?)_/g, '<em>$1</em>');
+            if (ext == '.md') {
+                line = line.replace(/_(.*?)_/g, '<em>$1</em>');
+            }
             paragraphs[count] ?
-                paragraphs[count] += (' ' + processedLine)
-                : paragraphs[count] = processedLine;
+                paragraphs[count] += (' ' + line)
+                : paragraphs[count] = line;
         } else {
             if (paragraphs[count]) {
                 count++;
