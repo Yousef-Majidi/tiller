@@ -21,27 +21,20 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     const ext = path.extname(input);
     let parsedFileName;
 
-    if (ext == '.md') { // Handle .md files as Markdown
-        paragraphs = await convertMarkdownFile(input)
-            .then((markdown) => markdown)
-            .catch((err) => console.log(err.message)); // TODO: Handle the error better
-        parsedFileName = path.basename(input, '.md');
-    }
-    else { // Handle other file types as text
-        for await (const line of rline) {
-            if (line.length > 0) {
-                paragraphs[count] ?
-                    paragraphs[count] += (' ' + line)
-                    : paragraphs[count] = line;
-            } else {
-                if (paragraphs[count]) {
-                    count++;
-                }
+    for await (const line of rline) {
+        if (line.length > 0) {
+            var processedLine = line.replace(/_(.*?)_/g, '<em>$1</em>');
+            paragraphs[count] ?
+                paragraphs[count] += (' ' + processedLine)
+                : paragraphs[count] = processedLine;
+        } else {
+            if (paragraphs[count]) {
+                count++;
             }
         }
-        parsedFileName = path.basename(input, '.txt');
     }
 
+    parsedFileName = path.basename(input, ext);
 
     let styleTag = "";
     if (css && css.match(/\.css$/)) {
@@ -71,24 +64,6 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
     }
 
     fs.appendFileSync(fullPath, `\n\t</body>\n</html>`);
-}
-
-/*
-    converts a markdown file to .html
-        input - the path of the file to convert
-*/
-const convertMarkdownFile = async (input) => {
-    try {
-        const fileContents = fs.readFileSync(input, 'utf8');
-        const paragraphs = fileContents.split(/\r\n\r\n/).map(p => {
-            console.log(p);
-            const formattedParagraph = p.replace(/_(.*?)_/g, '<em>$1</em>');
-            return formattedParagraph;
-        });
-        return paragraphs;
-    } catch (err) {
-        throw err;
-    }
 }
 
 /*
