@@ -18,11 +18,17 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         crlfDelay: Infinity,
     });
 
-    for await (const line of rline) {
+    const ext = path.extname(input);
+    let parsedFileName;
+
+    for await (let line of rline) {
         if (line.length > 0) {
-            paragraphs[count] ? 
+            if (ext == '.md') {
+                line = line.replace(/_(.*?)_/g, '<em>$1</em>');
+            }
+            paragraphs[count] ?
                 paragraphs[count] += (' ' + line)
-                :  paragraphs[count] = line;
+                : paragraphs[count] = line;
         } else {
             if (paragraphs[count]) {
                 count++;
@@ -30,8 +36,8 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         }
     }
 
-    let parsedFileName = path.basename(input, '.txt');
-    
+    parsedFileName = path.basename(input, ext);
+
     let styleTag = "";
     if (css && css.match(/\.css$/)) {
         styleTag = `<link rel='stylesheet' href=${css}>`;
@@ -42,10 +48,18 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         clearOutput(outputDir);
     }
 
+    // check if the output directory already contains a file with the same name
+    // if so, append a number to the end of the file name
+    let i = 2;
+    while (fs.existsSync(`${outputDir}/${parsedFileName}.html`)) {
+        parsedFileName = `${path.basename(input, ext)}(${i})`;
+        i++;
+    }
+
     const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
 
     fs.writeFileSync(fullPath,
-    `<!doctype html>
+        `<!doctype html>
     <html lang="en">
     <head>
         ${styleTag}
@@ -54,7 +68,7 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>`);
-    
+
     for (const paragraph of paragraphs) {
         fs.appendFileSync(fullPath, `\n\t\t<p>${paragraph}</p>`);
     }
@@ -69,16 +83,16 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         css - the url of the css spreadsheet to use
 */
 const convertDir = (input, outputDir, css) => {
-    const files = fs.readdirSync(input).filter((file) => path.extname(file) == '.txt');
+    const files = fs.readdirSync(input).filter((file) => path.extname(file) == '.txt' || path.extname(file) == '.md');
     if (files.length > 0) {
         clearOutput(outputDir);
         for (const file of files) {
             convertFile(`${input}/${file}`, outputDir, css, true)
-            .then(() => console.log(`Successfully proccessed ${path.resolve(file)}`))
-            .catch((err) => console.log(err.message));
+                .then(() => console.log(`Successfully processed ${path.resolve(file)}`))
+                .catch((err) => console.log(err.message));
         }
     } else {
-        console.log(`${input} contains no .txt files`);
+        console.log(`${input} contains no .txt or .md files`);
     }
 }
 
@@ -88,7 +102,7 @@ const convertDir = (input, outputDir, css) => {
 */
 const clearOutput = (dir) => {
     if (fs.existsSync(`${dir}`)) {
-        fs.rmSync(`${dir}`, {recursive: true, force: true});
+        fs.rmSync(`${dir}`, { recursive: true, force: true });
     }
     fs.mkdirSync(`${dir}`);
 }
@@ -101,12 +115,12 @@ const clearOutput = (dir) => {
 */
 const processFile = (input, options) => {
     if (fs.statSync(`${input}`).isFile()) {
-        if (path.extname(input) != '.txt') {
-            throw new Error("tiller only supports conversion of .txt files");
+        if (path.extname(input) != '.txt' && path.extname(input) != '.md') {
+            throw new Error("tiller only supports conversion of .txt and .md files");
         } else {
             convertFile(input, options.output, options.stylesheet)
-            .then(() => console.log(`Successfully proccessed ${path.resolve(input)}`))
-            .catch((err) => console.log(err.message));
+                .then(() => console.log(`Successfully processed ${path.resolve(input)}`))
+                .catch((err) => console.log(err.message));
         }
     } else {
         convertDir(input, options.output, options.stylesheet);
