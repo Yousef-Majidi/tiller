@@ -46,6 +46,14 @@ const convertFile = async (input, outputDir, css, convertingDir = false) => {
         clearOutput(outputDir);
     }
 
+    // check if the output directory already contains a file with the same name
+    // if so, append a number to the end of the file name
+    let i = 2;
+    while (fs.existsSync(`${outputDir}/${parsedFileName}.html`)) {
+        parsedFileName = `${path.basename(input, ext)}(${i})`;
+        i++;
+    }
+
     const fullPath = path.resolve(`${outputDir}/${parsedFileName}.html`);
 
     fs.writeFileSync(fullPath,
@@ -82,7 +90,7 @@ const convertDir = (input, outputDir, css) => {
                 .catch((err) => console.log(err.message));
         }
     } else {
-        console.log(`${input} contains no .txt files`);
+        console.log(`${input} contains no .txt or .md files`);
     }
 }
 
